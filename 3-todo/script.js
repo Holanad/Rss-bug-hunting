@@ -49,7 +49,14 @@ function deleteTask(id) {
 }
 
 function clearCompleted() {
-  tasks = [];
+  let arrayComplete = [];
+  
+  tasks.forEach((e) => {
+    if(e.done) {
+      arrayComplete.push(e);
+    }
+  })
+
   render();
 }
 
@@ -58,11 +65,18 @@ function getVisibleTasks() {
 }
 
 function updateCounter() {
-  counter.textContent = "Активных задач: " + tasks.length;
+  let countCompleateTask = 0;
+  for(let j = 0; j < tasks.length; j++) {
+    if(tasks[j].done == false) {
+      countCompleateTask++;
+    }
+  }
+  counter.textContent = "Активных задач: " + countCompleateTask;
 }
 
-function render() {
+function render(filter = {}) {
   const visible = getVisibleTasks();
+
 
   list.querySelectorAll('li').forEach((e) => {
     e.remove();
@@ -71,7 +85,6 @@ function render() {
   for (let i = 0; i < visible.length; i++) {
 
     const task = visible[i];
-  console.log(task)
     const li = document.createElement("li");
     
     li.className = "task";
@@ -81,6 +94,7 @@ function render() {
     } else {
       li.classList.remove("completed");
     }
+
 
     const span = document.createElement("span");
     span.className = "task__text";
@@ -92,9 +106,29 @@ function render() {
     del.textContent = "✕";
     del.addEventListener("click", () => deleteTask(task.id));
 
-    li.appendChild(span);
-    li.appendChild(del);
-    list.appendChild(li);
+    switch(Object.values(filter)[0]) {
+      case 'active': {
+        if(!li.classList.contains("completed")) {
+          li.appendChild(span);
+          li.appendChild(del);
+          list.appendChild(li);
+        }
+      }
+      break;
+      case 'done': {
+        if(li.classList.contains("completed")) {
+          li.appendChild(span);
+          li.appendChild(del);
+          list.appendChild(li);
+        }
+      }
+      break;
+      default: {
+        li.appendChild(span);
+        li.appendChild(del);
+        list.appendChild(li);
+      }
+    }
   }
   updateCounter();
 }
@@ -107,7 +141,8 @@ filterButtons.forEach((btn) => {
     filterButtons.forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
     currentFilter = btn.dataset.filter;
-    render();
+
+    render( {filter: currentFilter} );
   });
 });
 
