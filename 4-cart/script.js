@@ -24,6 +24,7 @@ function renderProducts() {
     card.innerHTML = `<h3>${p.name}</h3><p>${p.price} ₽</p>`;
     const btn = document.createElement("button");
     btn.textContent = "В корзину";
+    btn.setAttribute('data-id', p.id)
     btn.addEventListener("click", addToCart);
     card.appendChild(btn);
     productsEl.appendChild(card);
@@ -31,23 +32,34 @@ function renderProducts() {
 }
 
 function addToCart(id) {
-  const product = products.find((p) => p.id === id);
+  //const product = products.find((p) => p.id === id );
+  const product = products.find((p) => p.id === Number(id.target.getAttribute('data-id')));
+
   if (!product) {
     return;
   }
-  cart.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
+  const inCart = cart.find((j) => j.id === product.id)
+
+  if(!inCart) {
+    cart.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
+  } else {
+    const itemRepeate = cart.find((item) => item.id === inCart.id)
+    itemRepeate.qty++
+  }
+
   renderCart();
 }
 
 function increaseQty(id) {
   const item = cart.find((i) => i.id === id);
-  item.qty;
+  item.qty++;
   renderCart();
 }
 
 function decreaseQty(id) {
   const item = cart.find((i) => i.id === id);
-  item.qty--;
+
+  item.qty > 1 ? item.qty-- : item.qty;
   renderCart();
 }
 
@@ -70,22 +82,23 @@ function clearCart() {
 
 function renderCart() {
   cartItemsEl.innerHTML = "";
-  let total = "";
+  let total = 0;
   cart.forEach((item) => {
     const lineTotal = item.price;
     const li = document.createElement("li");
     li.className = "cart-item";
+    li.setAttribute('data-id', item.id)
     li.innerHTML = `<span>${item.name}</span>
       <button class="qty-btn" data-act="dec">−</button>
       <span class="qty">${item.qty}</span>
       <button class="qty-btn" data-act="inc">+</button>
-      <span class="line">${lineTotal} ₽</span>
+      <span class="line">${lineTotal * item.qty} ₽</span>
       <button class="remove">✕</button>`;
     li.querySelector('[data-act="inc"]').addEventListener("click", () => increaseQty(item.id));
     li.querySelector('[data-act="dec"]').addEventListener("click", () => decreaseQty(item.id));
     li.querySelector(".remove").addEventListener("click", () => removeItem(item.id));
     cartItemsEl.appendChild(li);
-    total += item.price * item.qty;
+    total += Number(item.price * item.qty);
   });
 
   if (discount) {
