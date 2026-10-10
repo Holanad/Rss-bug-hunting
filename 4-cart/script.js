@@ -68,22 +68,29 @@ function removeItem(id) {
   renderCart();
 }
 
+
 function applyPromo() {
-  if ((promoInput.value = "SALE10")) {
+  promoInput.value = promoInput.value.toUpperCase()
+  if ((promoInput.value == "SALE10")) {
     discount = 0.1;
+  } else {
+    discount = 0;
   }
+  console.log(promoInput)
   renderCart();
 }
 
 function clearCart() {
-  cart.splice(0, 1);
+  cart = [];
   renderCart();
 }
 
 function renderCart() {
   cartItemsEl.innerHTML = "";
   let total = 0;
+  let countCart = 0
   cart.forEach((item) => {
+    countCart += item.qty;
     const lineTotal = item.price;
     const li = document.createElement("li");
     li.className = "cart-item";
@@ -105,9 +112,16 @@ function renderCart() {
     total = total - total * discount;
   }
 
-  badgeEl.textContent = cart.length;
+  //badgeEl.textContent = cart.length;
+  badgeEl.textContent = countCart;
   totalEl.textContent = total;
-  emptyMsg.hidden = true;
+
+  if(cart.length == 0) {
+    emptyMsg.hidden = false;
+  } else {
+    emptyMsg.hidden = true;
+  }
+
 }
 
 promoBtn.addEventListener("click", applyPromo);
