@@ -22,25 +22,26 @@ function getFiltered() {
   const category = categorySelect.value;
   const sort = sortSelect.value;
 
-
+  
+  let searchSmallLetter = search.toLowerCase();
   if (search) {
-    let searchSmallLetter = search.toLowerCase();
-
-    //result = result.filter((p) => p.name === search);
-    result = result.filter((p) => p.name.toLowerCase() === searchSmallLetter);
+    result = products.filter((g) => g.name.toLocaleLowerCase().includes(searchSmallLetter))
   }
 
   if (category !== "all") {
-    //result = products.filter((p) => p.category !== category);
     result = products.filter((p) => p.category == category);
   }
-/*
-  if (sort === "asc") {
-    result.sort((a, b) => a.price - b.price);
-  } else if (sort === "desc") {
-    result.sort((a, b) => b.price - a.price);
-  }*/
- //console.log(result)
+
+  if(search && category !== "all") {
+    let arrayNew = [];
+    arrayNew = products.filter((g) => g.name.toLocaleLowerCase().includes(searchSmallLetter))
+    
+    console.log(arrayNew)
+
+    result = arrayNew.filter((p) => p.category == category);
+    console.log(result)
+  }
+
 
   switch(sort) {
     case 'asc': result.sort((a, b) => a.price - b.price);
@@ -62,7 +63,8 @@ function render() {
     card.innerHTML = `<h3>${p.name}</h3><p class="cat">${p.category}</p><p class="price">$${p.price}</p>`;
     grid.appendChild(card);
   });
-  countEl.textContent = products.length;
+  
+  countEl.textContent = items.length;
 }
 render()
 
@@ -72,4 +74,7 @@ sortSelect.addEventListener("change", render);
 
 resetBtn.addEventListener("click", () => {
   searchInput.value = "";
+  categorySelect.value = "all";
+  sortSelect.value = "default";
+  render()
 });
