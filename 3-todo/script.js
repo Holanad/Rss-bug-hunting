@@ -52,10 +52,11 @@ function clearCompleted() {
   let arrayComplete = [];
   
   tasks.forEach((e) => {
-    if(e.done) {
+    if(!e.done) {
       arrayComplete.push(e);
     }
   })
+  tasks = arrayComplete;
 
   render();
 }
